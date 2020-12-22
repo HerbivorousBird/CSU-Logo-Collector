@@ -6,10 +6,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
 #include "resource_manager.h"
 #include "camera.h"
-#include"Cube.h"
+#include "Cube.h"
 #include "PhysicsEngine.h"
 
 #include <iostream>
@@ -26,7 +25,8 @@ const unsigned int SCR_HEIGHT = 600;
 GLFWwindow* window;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(3.0f, 10.0f, 3.0f));
+PhysicsEngine* pEngine = new PhysicsEngine();
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -35,50 +35,6 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-float skyboxVertices[] = {
-	// positions          
-	-1.0f,  1.0f, -1.0f,
-	-1.0f, -1.0f, -1.0f,
-	 1.0f, -1.0f, -1.0f,
-	 1.0f, -1.0f, -1.0f,
-	 1.0f,  1.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,
-
-	-1.0f, -1.0f,  1.0f,
-	-1.0f, -1.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,
-	-1.0f,  1.0f,  1.0f,
-	-1.0f, -1.0f,  1.0f,
-
-	 1.0f, -1.0f, -1.0f,
-	 1.0f, -1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f, -1.0f,
-	 1.0f, -1.0f, -1.0f,
-
-	-1.0f, -1.0f,  1.0f,
-	-1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f, -1.0f,  1.0f,
-	-1.0f, -1.0f,  1.0f,
-
-	-1.0f,  1.0f, -1.0f,
-	 1.0f,  1.0f, -1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	-1.0f,  1.0f,  1.0f,
-	-1.0f,  1.0f, -1.0f,
-
-	-1.0f, -1.0f, -1.0f,
-	-1.0f, -1.0f,  1.0f,
-	 1.0f, -1.0f, -1.0f,
-	 1.0f, -1.0f, -1.0f,
-	-1.0f, -1.0f,  1.0f,
-	 1.0f, -1.0f,  1.0f
-};
 
 int main()
 {
@@ -93,20 +49,6 @@ int main()
 	auto face = ResourceManager::GetTexture("face");
 	auto con = ResourceManager::GetTexture("con");
 	Shader skyboxShader = ResourceManager::GetShader("skyboxShader");
-
-	// world space positions of our cubes
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
 
 	int maps[12][12] = {
 		1,1,2,2,3,1,1,1,2,2,3,1,
@@ -123,24 +65,15 @@ int main()
 		3,3,2,3,2,2,3,3,2,3,2,2
 	};
 
-	// skybox VAO
-	unsigned int skyboxVAO, skyboxVBO;
-	glGenVertexArrays(1, &skyboxVAO);
-	glGenBuffers(1, &skyboxVBO);
-	glBindVertexArray(skyboxVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	auto cube = new Cube();
-	PhysicsEngine* pEngine = new PhysicsEngine();
+	pEngine->initBoundary(&maps[0][0], 12, 12);
 	ourShader.use();
 	ourShader.setInt("texture1", 0);
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
-	glActiveTexture(GL_TEXTURE0);
-	con.Bind();
+
+	glm::vec3 lastPos = camera.Position;
 
 	// render loop
 	while (!glfwWindowShouldClose(window))
@@ -150,6 +83,7 @@ int main()
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+		std::cout<<deltaTime<<endl;
 
 		// input
 		// -----
@@ -161,17 +95,19 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ourShader.use();
-		// pass projection matrix to shader (note that in this case it could change every frame)
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		ourShader.setMat4("projection", projection);
 
-		//camera.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-		//pEngine->updateCameraVertMovement(camera.Position,camera.Position, deltaTime);
-		// camera/view transformation
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
+		
+		pEngine->updateCameraVertMovement(lastPos, camera.Position, deltaTime);
+		lastPos = camera.Position;
+
+		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("view", view);
 		
-		cube->BindBuffer();
+		glBindVertexArray(cube->VAO);
+		glActiveTexture(GL_TEXTURE0);
+		con.Bind();
 		// render boxes
 		for (unsigned int i = 0; i < 12; i++)
 		{
@@ -179,7 +115,7 @@ int main()
 				int z = maps[i][j];
 				for (unsigned int k = 0; k < z; k++) {
 					auto po = glm::vec3(i, k, j);
-					cube->draw(po, ourShader);
+					cube->drawCube(po, ourShader);
 				}
 			}
 		}
@@ -191,15 +127,18 @@ int main()
 		skyboxShader.setMat4("view", view);
 		skyboxShader.setMat4("projection", projection);
 		// skybox cube
-		glBindVertexArray(skyboxVAO);
+		glBindVertexArray(cube->VAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); // set depth function back to default
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+	delete cube;
 	glfwTerminate();
 	return 0;
 }
@@ -218,7 +157,7 @@ void processInput(GLFWwindow *window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		camera.ProcessKeyboard(JUMP, deltaTime);
+		pEngine->jumpAndUpdateVelocity();
 }
 
 
@@ -275,6 +214,7 @@ int initWindow() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+	glfwSwapInterval(1); //打开垂直同步
 
 	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

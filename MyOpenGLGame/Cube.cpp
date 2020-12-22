@@ -2,6 +2,16 @@
 
 Cube::Cube()
 {
+	setup_vertex();
+}
+
+Cube::~Cube()
+{
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+}
+
+void Cube::setup_vertex() {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glBindVertexArray(VAO);
@@ -15,23 +25,23 @@ Cube::Cube()
 	glEnableVertexAttribArray(1);
 }
 
-Cube::~Cube()
+
+
+void Cube::BindBuffer(Texture2D tex)
 {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	glBindVertexArray(VAO);
+	glActiveTexture(GL_TEXTURE0);
+	tex.Bind();
 }
 
-void Cube::BindBuffer()
+void Cube::drawCube(glm::vec3 position,Shader shader)
 {
-
-}
-
-void Cube::draw(glm::vec3 position,Shader shader)
-{
-	glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
-	//float angle = 20.0f * i;
-	//model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 	shader.setMat4("model", model);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void Cube::drawSkybox(Shader shader) {
+
 }
