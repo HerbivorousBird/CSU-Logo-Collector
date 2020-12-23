@@ -42,7 +42,7 @@ int main()
 
 	ResourceManager::LoadShader("cube_shader.vs", "cube_shader.fs", nullptr, "cube");
 	ResourceManager::LoadTexture("resources/textures/awesomeface.png", true, "face");
-	ResourceManager::LoadTexture("resources/textures/container2.png", true, "con");
+	ResourceManager::LoadTexture("resources/textures/container.jpg", false, "con");
 	unsigned int cubemapTexture = ResourceManager::loadCubeMapFromFile("resources/textures/skybox/");
 	ResourceManager::LoadShader("6.1.skybox.vs", "6.1.skybox.fs", nullptr, "skyboxShader");
 	Shader ourShader = ResourceManager::GetShader("cube");
@@ -50,7 +50,31 @@ int main()
 	auto con = ResourceManager::GetTexture("con");
 	Shader skyboxShader = ResourceManager::GetShader("skyboxShader");
 
-	int maps[12][12] = {
+	int maps[36][12] = {
+		1,1,2,2,3,1,1,1,2,2,3,1,
+		2,2,1,2,2,1,2,2,1,2,2,1,
+		3,2,2,1,2,1,3,2,2,1,2,1,
+		4,3,3,2,2,2,4,3,3,2,2,2,
+		3,4,3,3,2,1,3,4,3,3,2,1,
+		3,3,2,3,2,2,3,3,2,3,2,2,
+		1,1,2,2,3,1,1,1,2,2,3,1,
+		2,2,1,2,2,1,2,2,1,2,2,1,
+		3,2,2,1,2,1,3,2,2,1,2,1,
+		4,3,3,2,2,2,4,3,3,2,2,2,
+		3,4,3,3,2,1,3,4,3,3,2,1,
+		3,3,2,3,2,2,3,3,2,3,2,2,
+		1,1,2,2,3,1,1,1,2,2,3,1,
+		2,2,1,2,2,1,2,2,1,2,2,1,
+		3,2,2,1,2,1,3,2,2,1,2,1,
+		4,3,3,2,2,2,4,3,3,2,2,2,
+		3,4,3,3,2,1,3,4,3,3,2,1,
+		3,3,2,3,2,2,3,3,2,3,2,2,
+		1,1,2,2,3,1,1,1,2,2,3,1,
+		2,2,1,2,2,1,2,2,1,2,2,1,
+		3,2,2,1,2,1,3,2,2,1,2,1,
+		4,3,3,2,2,2,4,3,3,2,2,2,
+		3,4,3,3,2,1,3,4,3,3,2,1,
+		3,3,2,3,2,2,3,3,2,3,2,2,
 		1,1,2,2,3,1,1,1,2,2,3,1,
 		2,2,1,2,2,1,2,2,1,2,2,1,
 		3,2,2,1,2,1,3,2,2,1,2,1,
@@ -67,7 +91,7 @@ int main()
 
 
 	auto cube = new Cube();
-	pEngine->initBoundary(&maps[0][0], 12, 12);
+	pEngine->initBoundary(&maps[0][0], 36, 12);
 	ourShader.use();
 	ourShader.setInt("texture1", 0);
 	skyboxShader.use();
@@ -83,7 +107,6 @@ int main()
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		std::cout<<deltaTime<<endl;
 
 		// input
 		// -----
@@ -96,12 +119,13 @@ int main()
 
 		ourShader.use();
 
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
-		
+
 		pEngine->updateCameraVertMovement(lastPos, camera.Position, deltaTime);
 		lastPos = camera.Position;
 
+
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
 		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("view", view);
 		
@@ -109,7 +133,7 @@ int main()
 		glActiveTexture(GL_TEXTURE0);
 		con.Bind();
 		// render boxes
-		for (unsigned int i = 0; i < 12; i++)
+		for (unsigned int i = 0; i < 36; i++)
 		{
 			for (unsigned int j = 0; j < 12; j++) {
 				int z = maps[i][j];
@@ -131,7 +155,6 @@ int main()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
 
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); // set depth function back to default

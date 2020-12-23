@@ -50,7 +50,6 @@ public:
         Yaw = yaw;
         Pitch = pitch;
         updateCameraVectors();
-		Gravity = -9.8f;
     }
     // Constructor with scalar values
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -111,12 +110,12 @@ public:
     // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
     void ProcessMouseScroll(float yoffset)
     {
-        if (Zoom >= 1.0f && Zoom <= 45.0f)
+        if (Zoom >= 1.0f && Zoom <= 60.0f)
             Zoom -= yoffset;
         if (Zoom <= 1.0f)
             Zoom = 1.0f;
-        if (Zoom >= 45.0f)
-            Zoom = 45.0f;
+        if (Zoom >= 60.0f)
+            Zoom = 60.0f;
     }
 
 private:
