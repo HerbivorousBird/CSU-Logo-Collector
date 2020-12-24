@@ -25,7 +25,7 @@ const unsigned int SCR_HEIGHT = 600;
 GLFWwindow* window;
 
 // camera
-Camera camera(glm::vec3(3.0f, 10.0f, 3.0f));
+Camera camera(glm::vec3(3.0f, 5.0f, 3.0f));
 PhysicsEngine* pEngine = new PhysicsEngine();
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -91,7 +91,7 @@ int main()
 
 
 	auto cube = new Cube();
-	pEngine->initBoundary(&maps[0][0], 36, 12);
+	pEngine->initBoundary(&maps[0][0], 12, 36);
 	ourShader.use();
 	ourShader.setInt("texture1", 0);
 	skyboxShader.use();
@@ -117,13 +117,11 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		ourShader.use();
-
 
 		pEngine->updateCameraVertMovement(lastPos, camera.Position, deltaTime);
 		lastPos = camera.Position;
 
-
+		ourShader.use();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		ourShader.setMat4("projection", projection);
@@ -138,7 +136,7 @@ int main()
 			for (unsigned int j = 0; j < 12; j++) {
 				int z = maps[i][j];
 				for (unsigned int k = 0; k < z; k++) {
-					auto po = glm::vec3(i, k, j);
+					auto po = glm::vec3(j, k, i);
 					cube->drawCube(po, ourShader);
 				}
 			}
@@ -170,7 +168,6 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)

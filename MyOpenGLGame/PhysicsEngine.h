@@ -16,6 +16,11 @@ using namespace std;
 #define MoveSpeed 0.15f           //玩家移动速度
 #define BoundaryGap 1.0f          //碰撞间距
 #define JumpInitialSpeed 5.0f    //起跳初速度
+#define XL 	0x0001
+#define XR 	0x0010
+#define ZB 	0x0100
+#define ZT 	0x1000
+
 
 struct dot {
 	float x;
@@ -28,13 +33,18 @@ public:
 	PhysicsEngine();
 	void initBoundary(int* map, int mapx, int mapz);
 	glm::ivec3 getLocation(glm::vec3 pos);
+	int encode(glm::vec3 pos);
 	~PhysicsEngine();
 
 	void collisionTest(glm::vec3 & lastPos, glm::vec3 & newPos);
 
+	int isCollision(glm::vec3 & pos, glm::ivec3 loc);
+
+
 
 
 	bool isJumping;
+	bool isLowerThenNeighborhood(glm::ivec3 loc, int neiborCode);
 	void jumpAndUpdateVelocity();    //按下space跳跃时调用
 	//每帧绘制的时候更新摄像机垂直方向移动
 	void updateCameraVertMovement(glm::vec3 lastPos, glm::vec3 & newPos,float dt);

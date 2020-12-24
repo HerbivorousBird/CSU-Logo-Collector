@@ -97,6 +97,7 @@
   <ItemGroup>
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Hawkeye.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="resource_manager.cpp" />
@@ -108,6 +109,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="Hawkeye.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
