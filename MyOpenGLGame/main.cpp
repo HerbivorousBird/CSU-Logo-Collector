@@ -42,29 +42,32 @@ int main()
 
 	initWindow();
 
-	GameMap* map1 = new GameMap();
-	map1->initFromTxt("resources/maps/mazeMap.txt");
-	int* maps = map1->mapArr;
-	camera.Position = map1->roalPos;
+	GameMap* gamemap1 = new GameMap();
+	gamemap1->initFromTxt("resources/maps/map1.txt");
+	int* maps = gamemap1->mapArr;
+	camera.Position = gamemap1->roalPos;
 
 	ResourceManager::LoadShader("resources/shader/cube_shader.vs", "resources/shader/cube_shader.fs", nullptr, "cube");
 	ResourceManager::LoadShader("resources/shader/logo_shader.vs", "resources/shader/logo_shader.fs", nullptr, "logo");
-	ResourceManager::LoadTexture("resources/textures/brickwall.jpg", false, "face");
-	ResourceManager::LoadTexture("resources/textures/透明校徽2.png", true, "con");
-	unsigned int skyboxTexture = ResourceManager::loadCubeMapFromFile("resources/textures/skybox/");
-	unsigned int cubeTexture1 = ResourceManager::loadCubeMapFromFile("resources/textures/grassland/");
+	ResourceManager::LoadTexture2D("resources/textures/brickwall.jpg",false,"wallTex");
+	ResourceManager::LoadTexture2D("resources/textures/透明校徽2.png",true,"logoTex");
+	ResourceManager::LoadTextureCube("resources/textures/skybox/","skyboxTex");
+	ResourceManager::LoadTextureCube("resources/textures/grassland/","grasslandTex",GL_NEAREST);
 	ResourceManager::LoadShader("resources/shader/skybox.vs", "resources/shader/skybox.fs", nullptr, "skyboxShader");
 	Shader ourShader = ResourceManager::GetShader("cube");
-	auto face = ResourceManager::GetTexture("face");
-	auto con = ResourceManager::GetTexture("con");
+	auto wallTex = ResourceManager::GetTexture("wallTex");
+	auto logoTex = ResourceManager::GetTexture("logoTex");
+	auto skyboxTex = ResourceManager::GetTexture("skyboxTex");
+	auto grasslandTex = ResourceManager::GetTexture("grasslandTex");
 	auto logoShader = ResourceManager::GetShader("logo");
 	Shader skyboxShader = ResourceManager::GetShader("skyboxShader");
+	auto tex = ResourceManager::LoadTextureCube("resources/textures/grassland/", "grasslandTex", GL_NEAREST);
 
 
-	auto cube = new Cube(map1);
+	auto cube = new Cube(gamemap1);
 	auto logo = new CSUlogo();
 
-	pEngine->initBoundary(maps, map1->mapx, map1->mapz);
+	pEngine->initBoundary(maps, gamemap1->mapx, gamemap1->mapz);
 	ourShader.use();
 	ourShader.setInt("texture1", 0);
 	ourShader.setInt("texture2", 1);
@@ -105,18 +108,14 @@ int main()
 		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("view", view);
 		glBindVertexArray(cube->VAO);
-		//glActiveTexture(GL_TEXTURE0);
-		//face.Bind();
-		//glActiveTexture(GL_TEXTURE1);
-		//con.Bind();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture1);
+		grasslandTex.Bind();
 
 		// render boxes
-		for (unsigned int i = 0; i < map1->mapz; i++)
+		for (unsigned int i = 0; i < gamemap1->mapz; i++)
 		{
-			for (unsigned int j = 0; j < map1->mapx; j++) {
-				int z = maps[i*map1->mapx+j];
+			for (unsigned int j = 0; j < gamemap1->mapx; j++) {
+				int z = maps[i*gamemap1->mapx+j];
 				for (unsigned int k = 0; k < z; k++) {
 					auto po = glm::ivec3(j, k, i);
 					cube->drawCube(po, ourShader);
@@ -129,8 +128,8 @@ int main()
 		logoShader.setMat4("view", view);
 		glBindVertexArray(logo->VAO);
 		glActiveTexture(GL_TEXTURE0);
-		con.Bind();
-		logo->drawLogo(map1->roalPos+glm::ivec3(0,0,1), logoShader);
+		logoTex.Bind();
+		logo->drawLogo(gamemap1->roalPos+glm::ivec3(0,0,1), logoShader);
 
 		// draw skybox as last
 		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -141,7 +140,7 @@ int main()
 		// skybox cube
 		glBindVertexArray(cube->VAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+		skyboxTex.Bind();
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glBindVertexArray(0);

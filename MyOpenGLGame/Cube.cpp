@@ -38,9 +38,8 @@ void Cube::setup_vertex() {
 void Cube::drawCube(glm::ivec3 position,Shader shader)
 {
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, (glm::vec3)position);
+	shader.SetVector3f("translate",position);
 	shader.setMat4("model", model);
-	shader.setInt("y", position.y);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 

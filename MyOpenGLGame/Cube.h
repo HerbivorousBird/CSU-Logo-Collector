@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "shader.h"
-#include "texture.h"
+#include "Texture.h"
 #include "GameMap.h"
 
 class Cube
@@ -14,7 +14,7 @@ public:
 	Cube(GameMap* map);
 	~Cube();
 	
-	void BindBuffer(Texture2D tex);
+	void BindBuffer(Texture tex);
 	unsigned int VBO, VAO;
 	unsigned int instanceVBO;
 	void drawCube(glm::ivec3 position, Shader shader);

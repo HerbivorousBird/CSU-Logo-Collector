@@ -1,39 +1,79 @@
-/*******************************************************************
-** This code is part of Breakout.
-**
-** Breakout is free software: you can redistribute it and/or modify
-** it under the terms of the CC BY 4.0 license as published by
-** Creative Commons, either version 4 of the License, or (at your
-** option) any later version.
-******************************************************************/
-#ifndef TEXTURE_H
-#define TEXTURE_H
-
+#pragma once
 #include <glad/glad.h>
-
-// Texture2D is able to store and configure a texture in OpenGL.
-// It also hosts utility functions for easy management.
-class Texture2D
+#include <iostream>
+#include <string>
+#include "stb_image.h"
+class Texture
 {
 public:
-    // holds the ID of the texture object, used for all texture operations to reference to this particlar texture
-    unsigned int ID;
-    // texture image dimensions
-    unsigned int Width, Height; // width and height of loaded image in pixels
-    // texture Format
-    unsigned int Internal_Format; // format of texture object
-    unsigned int Image_Format; // format of loaded image
-    // texture configuration
-    unsigned int Wrap_S; // wrapping mode on S axis
-    unsigned int Wrap_T; // wrapping mode on T axis
-    unsigned int Filter_Min; // filtering mode if texture pixels < screen pixels
-    unsigned int Filter_Max; // filtering mode if texture pixels > screen pixels
-    // constructor (sets default texture modes)
-    Texture2D();
-    // generates texture from image data
-    void Generate(unsigned int width, unsigned int height, unsigned char* data);
-    // binds the texture as the current active GL_TEXTURE_2D texture object
-    void Bind() const;
-};
+	unsigned int ID;
+	int texType;
+	int Width, Height;
+	int Image_Format;
+	int Wrap_S;
+	int Wrap_T;
+	int Wrap_R;
+	int Filter_Min;
+	int Filter_Max;
 
-#endif
+	Texture(unsigned int type= GL_TEXTURE_2D)
+	{
+		glGenTextures(1, &this->ID);
+		this->texType = type;
+	};
+	void initPara(int Image_Format,int Filter, int Wrap) {
+		this->Image_Format = Image_Format;
+		this->Wrap_S = Wrap;
+		this->Wrap_T = Wrap;
+		this->Wrap_T = Wrap;
+		this->Filter_Max = Filter;
+		this->Filter_Min = Filter;
+	}
+
+	void Generate(const char *file) {
+		if (texType == GL_TEXTURE_2D) {
+			GenerateTex2D(file);
+		}
+		else {
+			GenerateTexCube(file);
+		}
+	}
+
+	void GenerateTex2D(const char *file)
+	{
+		unsigned char* data = stbi_load(file, &Width, &Height, NULL, 0);
+		glBindTexture(GL_TEXTURE_2D, this->ID);
+		glTexImage2D(GL_TEXTURE_2D, 0, Image_Format, Width, Height, 0, Image_Format, GL_UNSIGNED_BYTE, data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Wrap_S);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Wrap_T);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Filter_Min);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Filter_Max);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	};
+
+	void GenerateTexCube(const char *filepath) {
+		std::string fileName[6] = { "right","left","top","bottom","front","back" };
+		glBindTexture(GL_TEXTURE_CUBE_MAP,ID);
+		for (int i = 0; i < 6; i++) {
+			auto file = filepath + fileName[i] + ".jpg";
+			unsigned char* data = stbi_load(file.data(), &Width, &Height, NULL, 0);
+			if (data)
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			else
+				std::cout << "Cubemap texture failed to load at path: " << file << std::endl;
+			stbi_image_free(data);
+		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, Filter_Min);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, Filter_Max);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, Wrap_S);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, Wrap_T);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, Wrap_R);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	}
+
+	void Bind()
+	{
+		glBindTexture(texType, this->ID);
+	};
+};

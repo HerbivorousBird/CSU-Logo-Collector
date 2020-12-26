@@ -105,7 +105,6 @@
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader.cpp" />
-    <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -114,13 +113,10 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Hawkeye.h" />
     <ClInclude Include="PhysicsEngine.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
-    <ClInclude Include="TexCubeMap.h" />
-    <ClInclude Include="texture.h" />
-    <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MyOpenGLGame.rc" />
