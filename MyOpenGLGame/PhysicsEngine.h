@@ -3,19 +3,16 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
-#include <vector>
 using namespace std;
 
-#define min(x,y) ((x) < (y) ? (x) : (y))
-#define max(x,y) ((x) < (y) ? (y) : (x))
+
 
 #define roleHeight 1.6f           //玩家视点到脚的高度
 
-#define GravityAcceler -9.8f
+#define GravityAcceler -10
 
-#define MoveSpeed 0.15f           //玩家移动速度
-#define BoundaryGap 1.0f          //碰撞间距
 #define JumpInitialSpeed 5.0f    //起跳初速度
+
 #define XL 	0x0001
 #define XR 	0x0010
 #define ZB 	0x0100
@@ -31,36 +28,26 @@ struct dot {
 class PhysicsEngine {
 public:
 	PhysicsEngine();
-	void initBoundary(int* map, int mapx, int mapz);
-	glm::ivec3 getLocation(glm::vec3 pos);
-	int encode(glm::vec3 pos);
 	~PhysicsEngine();
 
-	void collisionTest(glm::vec3 & lastPos, glm::vec3 & newPos);
+	void initBoundary(int* map, int mapx, int mapz);
+	void jumpAndUpdateVelocity();    //跳跃时调用
 
-	int isCollision(glm::vec3 & pos, glm::ivec3 loc);
-
-
-
-
-	bool isJumping;
-	bool isLowerThenNeighborhood(glm::ivec3 loc, int neiborCode);
-	void jumpAndUpdateVelocity();    //按下space跳跃时调用
 	//每帧绘制的时候更新摄像机垂直方向移动
 	void updateCameraVertMovement(glm::vec3 lastPos, glm::vec3 & newPos,float dt);
 
 private:
-	//空间内部边缘碰撞检测（不考虑高度，即XZ平面）
-	void inCollisionTestXZ(float x1, float z1, float x2, float z2, glm::vec3 & cameraPos, glm::vec3 & targetPos);
 
-	glm::vec4 getNeighbourhood(glm::ivec3 loc);
-
-	
+	glm::ivec3 getLocation(glm::vec3 pos);
+	int encode(glm::vec3 pos);
+	void collisionTest(glm::vec3 lastPos, glm::vec3 & newPos);
+	void testXZCollision(glm::vec3 & pos, glm::ivec3 loc);
+	void updataNeighbour(glm::ivec3 loc);
 	float vy;        //垂直方向速度
-
-	int* map;
-	int mapx, mapz;
-	glm::vec4 outerBoundary;
+	bool isJumping;  //是否在跳跃
+	int* map;        //地图数组
+	int mapx, mapz;  //地图尺寸
+	bool accessibleNei[10];  //邻域是否可进入
 };
 
 #endif // !PHYSICSENGINE_H

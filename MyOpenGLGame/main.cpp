@@ -9,8 +9,9 @@
 #include "resource_manager.h"
 #include "camera.h"
 #include "Cube.h"
+#include "CSUlogo.h"
 #include "PhysicsEngine.h"
-
+#include "GameMap.h"
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -22,6 +23,7 @@ int initWindow();
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+float aspect = ((float)SCR_WIDTH) / SCR_HEIGHT;
 GLFWwindow* window;
 
 // camera
@@ -35,67 +37,41 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-
 int main()
 {
+
 	initWindow();
 
-	ResourceManager::LoadShader("cube_shader.vs", "cube_shader.fs", nullptr, "cube");
-	ResourceManager::LoadTexture("resources/textures/awesomeface.png", true, "face");
-	ResourceManager::LoadTexture("resources/textures/container.jpg", false, "con");
-	unsigned int cubemapTexture = ResourceManager::loadCubeMapFromFile("resources/textures/skybox/");
-	ResourceManager::LoadShader("6.1.skybox.vs", "6.1.skybox.fs", nullptr, "skyboxShader");
+	GameMap* map1 = new GameMap();
+	map1->initFromTxt("resources/maps/mazeMap.txt");
+	int* maps = map1->mapArr;
+	camera.Position = map1->roalPos;
+
+	ResourceManager::LoadShader("resources/shader/cube_shader.vs", "resources/shader/cube_shader.fs", nullptr, "cube");
+	ResourceManager::LoadShader("resources/shader/logo_shader.vs", "resources/shader/logo_shader.fs", nullptr, "logo");
+	ResourceManager::LoadTexture("resources/textures/brickwall.jpg", false, "face");
+	ResourceManager::LoadTexture("resources/textures/Í¸Ã÷Ð£»Õ2.png", true, "con");
+	unsigned int skyboxTexture = ResourceManager::loadCubeMapFromFile("resources/textures/skybox/");
+	unsigned int cubeTexture1 = ResourceManager::loadCubeMapFromFile("resources/textures/grassland/");
+	ResourceManager::LoadShader("resources/shader/skybox.vs", "resources/shader/skybox.fs", nullptr, "skyboxShader");
 	Shader ourShader = ResourceManager::GetShader("cube");
 	auto face = ResourceManager::GetTexture("face");
 	auto con = ResourceManager::GetTexture("con");
+	auto logoShader = ResourceManager::GetShader("logo");
 	Shader skyboxShader = ResourceManager::GetShader("skyboxShader");
 
-	int maps[36][12] = {
-		1,1,2,2,3,1,1,1,2,2,3,1,
-		2,2,1,2,2,1,2,2,1,2,2,1,
-		3,2,2,1,2,1,3,2,2,1,2,1,
-		4,3,3,2,2,2,4,3,3,2,2,2,
-		3,4,3,3,2,1,3,4,3,3,2,1,
-		3,3,2,3,2,2,3,3,2,3,2,2,
-		1,1,2,2,3,1,1,1,2,2,3,1,
-		2,2,1,2,2,1,2,2,1,2,2,1,
-		3,2,2,1,2,1,3,2,2,1,2,1,
-		4,3,3,2,2,2,4,3,3,2,2,2,
-		3,4,3,3,2,1,3,4,3,3,2,1,
-		3,3,2,3,2,2,3,3,2,3,2,2,
-		1,1,2,2,3,1,1,1,2,2,3,1,
-		2,2,1,2,2,1,2,2,1,2,2,1,
-		3,2,2,1,2,1,3,2,2,1,2,1,
-		4,3,3,2,2,2,4,3,3,2,2,2,
-		3,4,3,3,2,1,3,4,3,3,2,1,
-		3,3,2,3,2,2,3,3,2,3,2,2,
-		1,1,2,2,3,1,1,1,2,2,3,1,
-		2,2,1,2,2,1,2,2,1,2,2,1,
-		3,2,2,1,2,1,3,2,2,1,2,1,
-		4,3,3,2,2,2,4,3,3,2,2,2,
-		3,4,3,3,2,1,3,4,3,3,2,1,
-		3,3,2,3,2,2,3,3,2,3,2,2,
-		1,1,2,2,3,1,1,1,2,2,3,1,
-		2,2,1,2,2,1,2,2,1,2,2,1,
-		3,2,2,1,2,1,3,2,2,1,2,1,
-		4,3,3,2,2,2,4,3,3,2,2,2,
-		3,4,3,3,2,1,3,4,3,3,2,1,
-		3,3,2,3,2,2,3,3,2,3,2,2,
-		1,1,2,2,3,1,1,1,2,2,3,1,
-		2,2,1,2,2,1,2,2,1,2,2,1,
-		3,2,2,1,2,1,3,2,2,1,2,1,
-		4,3,3,2,2,2,4,3,3,2,2,2,
-		3,4,3,3,2,1,3,4,3,3,2,1,
-		3,3,2,3,2,2,3,3,2,3,2,2
-	};
 
+	auto cube = new Cube(map1);
+	auto logo = new CSUlogo();
 
-	auto cube = new Cube();
-	pEngine->initBoundary(&maps[0][0], 12, 36);
+	pEngine->initBoundary(maps, map1->mapx, map1->mapz);
 	ourShader.use();
 	ourShader.setInt("texture1", 0);
+	ourShader.setInt("texture2", 1);
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
+	logoShader.use();
+	logoShader.setInt("texture1", 0);
 
 	glm::vec3 lastPos = camera.Position;
 
@@ -114,33 +90,47 @@ int main()
 
 		// render
 		// ------
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		pEngine->updateCameraVertMovement(lastPos, camera.Position, deltaTime);
+		logo->updateAngle();
 		lastPos = camera.Position;
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),aspect, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+
 
 		ourShader.use();
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
 		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("view", view);
-		
 		glBindVertexArray(cube->VAO);
+		//glActiveTexture(GL_TEXTURE0);
+		//face.Bind();
+		//glActiveTexture(GL_TEXTURE1);
+		//con.Bind();
 		glActiveTexture(GL_TEXTURE0);
-		con.Bind();
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture1);
+
 		// render boxes
-		for (unsigned int i = 0; i < 36; i++)
+		for (unsigned int i = 0; i < map1->mapz; i++)
 		{
-			for (unsigned int j = 0; j < 12; j++) {
-				int z = maps[i][j];
+			for (unsigned int j = 0; j < map1->mapx; j++) {
+				int z = maps[i*map1->mapx+j];
 				for (unsigned int k = 0; k < z; k++) {
-					auto po = glm::vec3(j, k, i);
+					auto po = glm::ivec3(j, k, i);
 					cube->drawCube(po, ourShader);
 				}
 			}
 		}
+
+		logoShader.use();
+		logoShader.setMat4("projection", projection);
+		logoShader.setMat4("view", view);
+		glBindVertexArray(logo->VAO);
+		glActiveTexture(GL_TEXTURE0);
+		con.Bind();
+		logo->drawLogo(map1->roalPos+glm::ivec3(0,0,1), logoShader);
 
 		// draw skybox as last
 		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -151,7 +141,7 @@ int main()
 		// skybox cube
 		glBindVertexArray(cube->VAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glBindVertexArray(0);
@@ -178,11 +168,14 @@ void processInput(GLFWwindow *window)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		pEngine->jumpAndUpdateVelocity();
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+	aspect = height > 0 ? width / (double)height : 1.0;
 	glViewport(0, 0, width, height);
 }
 
@@ -195,13 +188,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		lastY = ypos;
 		firstMouse = false;
 	}
-
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
 	lastX = xpos;
 	lastY = ypos;
-
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
@@ -250,4 +240,9 @@ int initWindow() {
 	// configure global opengl state
 	// -----------------------------
 	glEnable(GL_DEPTH_TEST);
+
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_ALPHA_TEST);
+	//glAlphaFunc(GL_GREATER, 0);
 }

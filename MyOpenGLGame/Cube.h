@@ -6,22 +6,25 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "shader.h"
 #include "texture.h"
+#include "GameMap.h"
 
 class Cube
 {
 public:
-	Cube();
+	Cube(GameMap* map);
 	~Cube();
 	
 	void BindBuffer(Texture2D tex);
 	unsigned int VBO, VAO;
-	void drawCube(glm::vec3 position, Shader shader);
+	unsigned int instanceVBO;
+	void drawCube(glm::ivec3 position, Shader shader);
 	void drawSkybox(Shader shader);
 
 private:
 
 	float ratio = 1;
 	void setup_vertex();
+	GameMap *map;
 	float vertices[180] = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 	 0.5f, -0.5f, -0.5f,  ratio, 0.0f,

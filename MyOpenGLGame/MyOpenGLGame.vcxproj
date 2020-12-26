@@ -87,35 +87,47 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="6.1.cubemaps.fs" />
-    <None Include="6.1.cubemaps.vs" />
-    <None Include="6.1.skybox.fs" />
-    <None Include="6.1.skybox.vs" />
-    <None Include="cube_shader.fs" />
-    <None Include="cube_shader.vs" />
+    <None Include="resources\shader\logo_shader.fs" />
+    <None Include="resources\shader\logo_shader.vs" />
+    <None Include="resources\shader\skybox.fs" />
+    <None Include="resources\shader\skybox.vs" />
+    <None Include="resources\shader\cube_shader.fs" />
+    <None Include="resources\shader\cube_shader.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CSUlogo.cpp" />
     <ClCompile Include="Cube.cpp" />
-    <ClCompile Include="glad.c" />
+    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="includes\glad\glad.c" />
     <ClCompile Include="Hawkeye.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
+    <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader.cpp" />
-    <ClCompile Include="Skybox.cpp" />
-    <ClCompile Include="TexCubeMap.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="CSUlogo.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="GameScene.h" />
     <ClInclude Include="Hawkeye.h" />
     <ClInclude Include="PhysicsEngine.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="GameMap.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
-    <ClInclude Include="Skybox.h" />
     <ClInclude Include="TexCubeMap.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="Texture2D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MyOpenGLGame.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="resources\maps\map1.txt" />
+    <Text Include="resources\maps\mazeMap.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
