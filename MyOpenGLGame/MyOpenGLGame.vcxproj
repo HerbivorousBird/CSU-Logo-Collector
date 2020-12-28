@@ -87,22 +87,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="resources\shader\logo_shader.fs" />
-    <None Include="resources\shader\logo_shader.vs" />
+    <None Include="resources\shader\fullPic.fs" />
+    <None Include="resources\shader\fullPic.vs" />
+    <None Include="resources\shader\logo.fs" />
+    <None Include="resources\shader\logo.vs" />
     <None Include="resources\shader\skybox.fs" />
     <None Include="resources\shader\skybox.vs" />
-    <None Include="resources\shader\cube_shader.fs" />
-    <None Include="resources\shader\cube_shader.vs" />
+    <None Include="resources\shader\cube.fs" />
+    <None Include="resources\shader\cube.vs" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CSUlogo.cpp" />
-    <ClCompile Include="Cube.cpp" />
-    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="includes\glad\glad.c" />
     <ClCompile Include="Hawkeye.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
-    <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader.cpp" />
   </ItemGroup>
@@ -110,12 +108,14 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="CSUlogo.h" />
     <ClInclude Include="Cube.h" />
-    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="FullScreenPic.h" />
+    <ClInclude Include="GameSceneControl.h" />
     <ClInclude Include="Hawkeye.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="StaticEnv.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>

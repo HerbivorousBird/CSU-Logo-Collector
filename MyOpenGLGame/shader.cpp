@@ -1,13 +1,4 @@
-/*******************************************************************
-** This code is part of Breakout.
-**
-** Breakout is free software: you can redistribute it and/or modify
-** it under the terms of the CC BY 4.0 license as published by
-** Creative Commons, either version 4 of the License, or (at your
-** option) any later version.
-******************************************************************/
 #include "shader.h"
-
 #include <iostream>
 
 Shader &Shader::use()
@@ -52,7 +43,7 @@ void Shader::Compile(const char* vertexSource, const char* fragmentSource, const
         glDeleteShader(gShader);
 }
 
-void Shader::SetFloat(const char *name, float value, bool useShader)
+void Shader::setFloat(const char *name, float value, bool useShader)
 {
     if (useShader)
         this->use();
@@ -76,25 +67,25 @@ void Shader::setVec2f(const char *name, const glm::vec2 &value, bool useShader)
         this->use();
     glUniform2f(glGetUniformLocation(this->ID, name), value.x, value.y);
 }
-void Shader::SetVector3f(const char *name, float x, float y, float z, bool useShader)
+void Shader::setVec3f(const char *name, float x, float y, float z, bool useShader)
 {
     if (useShader)
         this->use();
     glUniform3f(glGetUniformLocation(this->ID, name), x, y, z);
 }
-void Shader::SetVector3f(const char *name, const glm::vec3 &value, bool useShader)
+void Shader::setVec3f(const char *name, const glm::vec3 &value, bool useShader)
 {
     if (useShader)
         this->use();
     glUniform3f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z);
 }
-void Shader::SetVector4f(const char *name, float x, float y, float z, float w, bool useShader)
+void Shader::setVec4f(const char *name, float x, float y, float z, float w, bool useShader)
 {
     if (useShader)
         this->use();
     glUniform4f(glGetUniformLocation(this->ID, name), x, y, z, w);
 }
-void Shader::SetVector4f(const char *name, const glm::vec4 &value, bool useShader)
+void Shader::setVec4f(const char *name, const glm::vec4 &value, bool useShader)
 {
     if (useShader)
         this->use();

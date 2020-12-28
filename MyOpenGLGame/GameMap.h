@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GAMEMAP_H
+#define GAMEMAP_H
+
 #include "glm/glm.hpp"
 #include <fstream>
 #include <iostream>
@@ -8,7 +10,6 @@ using namespace std;
 
 class GameMap{
 public:
-
 	int mapx;
 	int mapz;
 	int type;
@@ -17,7 +18,9 @@ public:
 	glm::ivec3 roalPos;
 	glm::ivec3 targetPos;
 
-	void initFromTxt(char filePath[])
+	GameMap() {};
+
+	void initFromTxt(const char filePath[])
 	{
 		sum = 0;
 		char temp[1000];
@@ -43,6 +46,10 @@ public:
 		file.close();
 	}
 
+	int getY(int x, int z) {
+		return mapArr[z * mapx + x];
+	}
+
 	glm::ivec3 randTarget() {
 		srand(unsigned(time(NULL)));
 		int n = rand() % sum;
@@ -62,7 +69,5 @@ public:
 		}
 		return result;
 	}
-
-private:
-	
 };
+#endif

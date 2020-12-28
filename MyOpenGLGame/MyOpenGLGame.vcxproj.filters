@@ -1,16 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="includes\glad\glad.c" />
-    <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="Hawkeye.cpp" />
-    <ClCompile Include="CSUlogo.cpp" />
-    <ClCompile Include="GameScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -21,16 +17,20 @@
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="Hawkeye.h" />
     <ClInclude Include="CSUlogo.h" />
-    <ClInclude Include="GameScene.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="GameSceneControl.h" />
+    <ClInclude Include="StaticEnv.h" />
+    <ClInclude Include="FullScreenPic.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shader\skybox.vs" />
     <None Include="resources\shader\skybox.fs" />
-    <None Include="resources\shader\cube_shader.fs" />
-    <None Include="resources\shader\cube_shader.vs" />
-    <None Include="resources\shader\logo_shader.vs" />
-    <None Include="resources\shader\logo_shader.fs" />
+    <None Include="resources\shader\fullPic.fs" />
+    <None Include="resources\shader\fullPic.vs" />
+    <None Include="resources\shader\cube.vs" />
+    <None Include="resources\shader\cube.fs" />
+    <None Include="resources\shader\logo.fs" />
+    <None Include="resources\shader\logo.vs" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MyOpenGLGame.rc" />

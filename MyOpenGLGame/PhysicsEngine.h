@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
+#include "GameMap.h"
 using namespace std;
 
 
@@ -19,22 +20,17 @@ using namespace std;
 #define ZT 	0x1000
 
 
-struct dot {
-	float x;
-	float y;
-	dot(float _x, float _y) :x(_x), y(_y) { }
-};
 
 class PhysicsEngine {
 public:
 	PhysicsEngine();
 	~PhysicsEngine();
 
-	void initBoundary(int* map, int mapx, int mapz);
-	void jumpAndUpdateVelocity();    //跳跃时调用
+	void initBoundary(GameMap &gmap);
+	void jump();
 
-	//每帧绘制的时候更新摄像机垂直方向移动
-	void updateCameraVertMovement(glm::vec3 lastPos, glm::vec3 & newPos,float dt);
+	//每帧绘制的时候更新摄像机
+	void updateCamera(glm::vec3 lastPos, glm::vec3 & newPos,float dt);
 
 private:
 
@@ -50,7 +46,7 @@ private:
 	bool accessibleNei[10];  //邻域是否可进入
 };
 
-#endif // !PHYSICSENGINE_H
+#endif
 
 
 

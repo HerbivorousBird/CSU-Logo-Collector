@@ -1,9 +1,8 @@
 #include "resource_manager.h"
 
-
-std::map<std::string, Texture>    ResourceManager::Textures;
-std::map<std::string, Shader>       ResourceManager::Shaders;
-
+std::map<std::string, Texture> ResourceManager::Textures;
+std::map<std::string, Shader> ResourceManager::Shaders;
+std::map<std::string, GameMap> ResourceManager::GameMaps;
 
 Shader ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, std::string name)
 {
@@ -40,6 +39,19 @@ Texture ResourceManager::LoadTextureCube(const char *file, std::string name, int
 Texture ResourceManager::GetTexture(std::string name)
 {
     return Textures[name];
+}
+
+GameMap ResourceManager::LoadGameMap(const char * file, std::string name)
+{
+	GameMap gmap;
+	gmap.initFromTxt(file);
+	GameMaps[name] = gmap;
+	return GameMaps[name];
+}
+
+GameMap ResourceManager::GetGameMap(std::string name)
+{
+	return GameMaps[name];
 }
 
 void ResourceManager::Clear()

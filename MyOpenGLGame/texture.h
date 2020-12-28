@@ -21,6 +21,7 @@ public:
 		glGenTextures(1, &this->ID);
 		this->texType = type;
 	};
+
 	void initPara(int Image_Format,int Filter, int Wrap) {
 		this->Image_Format = Image_Format;
 		this->Wrap_S = Wrap;
