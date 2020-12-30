@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include "stb_image.h"
+
 class Texture
 {
 public:

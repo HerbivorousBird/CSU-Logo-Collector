@@ -14,8 +14,9 @@
 #include "GameMap.h"
 #include <iostream>
 #include "GameSceneControl.h"
+#include "ParticleSystem.h"
 
-
+void esc_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -35,23 +36,27 @@ bool mouseIsCaptured = true;
 GLFWwindow* window;
 Camera* camera;
 PhysicsEngine* pEngine;
+GameMap* gmap;
+GameSceneControl* gameSceneP;
+Scene* currentScene;
+
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
+
 
 int main()
 {
 	initWindow();
 	GameSceneControl gameScene;
+	gameSceneP = &gameScene;
 	gameScene.initResourse();
+	gameScene.bindTex2Sha();
+	currentScene = &gameScene.currentScene;
 	pEngine = &gameScene.pEngine;
 	camera = &gameScene.camera;
-
-
-	gameScene.setMap("resources/maps/map1.txt");
-	gameScene.bindTex2Sha();
-
-
+	gmap = &gameScene.gmap;
+	gameScene.initMap();
 	// render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -59,51 +64,111 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		processInput(window);
-		gameScene.updataPara(aspect, deltaTime);
 
-		// render
-		// ------
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-		gameScene.DrawMap();
-		gameScene.DrawLogo();
-		gameScene.DrawSkybox();
-
-		//gameScene.DrawMainMenu();
-
+		switch (*currentScene) {
+		case MAINMENU:
+		case HELP_C:
+		case HELP_M:
+		case WIN:
+			gameScene.DrawFullScreen();
+		case COLLECT:
+			gameScene.updataPara(aspect, deltaTime);
+			gameScene.DrawMap();
+			gameScene.DrawLogo();
+			gameScene.DrawCollectScore(aspect);
+			gameScene.DrawParticle();
+			gameScene.DrawSkybox();
+			if (pEngine->isCollectable()) {
+				gameScene.collectScore++;
+				gameScene.particle.init(60, gmap->targetLoc);
+				if (gameScene.collectScore >= 5) {
+					*currentScene = WIN;
+				}
+				gmap->randTarget();
+			}
+			break;
+		case MAZE:
+			gameScene.updataPara(aspect, deltaTime);
+			gameScene.DrawMap();
+			gameScene.DrawLogo();
+			gameScene.DrawHawkeye(aspect);
+			gameScene.DrawParticle();
+			gameScene.DrawSkybox();
+			if (pEngine->isCollectable()) {
+				gameScene.particle.init(60, gmap->targetLoc);
+				*currentScene = WIN;
+				gameScene.DrawFullScreen();
+				gmap->randTarget();
+			}
+		}
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
 	glfwTerminate();
 	return 0;
 }
 
 void processInput(GLFWwindow *window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera->ProcessKeyboard(FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera->ProcessKeyboard(BACKWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera->ProcessKeyboard(LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera->ProcessKeyboard(RIGHT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		pEngine->jump();
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+	switch (*currentScene) {
+	case MAINMENU:
+		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+			*currentScene = HELP_C;
+		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+			*currentScene = HELP_M;
+		break;
+	case HELP_C:
+		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+			*currentScene = COLLECT;
+			gameSceneP->initMap();
+		}
+		break;
+	case HELP_M:
+		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+			*currentScene = MAZE;
+			gameSceneP->initMap();
+		}
+		break;
+	case WIN:
+		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+			*currentScene = MAINMENU;
+		break;
+	default:
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			camera->ProcessKeyboard(FORWARD, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			camera->ProcessKeyboard(BACKWARD, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			camera->ProcessKeyboard(LEFT, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			camera->ProcessKeyboard(RIGHT, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+			pEngine->jump();
+	}
+}
+
+void esc_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	if (key== GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
+		switch (*currentScene)
+		{
+		case MAINMENU:
+			glfwSetWindowShouldClose(window, true);
+			break;
+		default:
+			*currentScene = MAINMENU;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
 		if (mouseIsCaptured)
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		else
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		mouseIsCaptured = !mouseIsCaptured;
 	}
-
 }
-
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -144,7 +209,8 @@ int initWindow() {
 #endif
 
 	// glfw window creation
-	// --------------------
+	// -------------------
+
 	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "MyGame", NULL, NULL);
 	if (window == NULL)
 	{
@@ -156,6 +222,7 @@ int initWindow() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetKeyCallback(window, esc_callback);
 	glfwSwapInterval(1); //打开垂直同步
 
 	// tell GLFW to capture our mouse
@@ -173,8 +240,8 @@ int initWindow() {
 	// -----------------------------
 	glEnable(GL_DEPTH_TEST);
 
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_ALPHA_TEST);
 	//glAlphaFunc(GL_GREATER, 0);
 }

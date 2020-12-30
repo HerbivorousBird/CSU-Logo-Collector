@@ -1,21 +1,11 @@
 #include "resource_manager.h"
 
-std::map<std::string, Texture> ResourceManager::Textures;
-std::map<std::string, Shader> ResourceManager::Shaders;
-std::map<std::string, GameMap> ResourceManager::GameMaps;
-
-Shader ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, std::string name)
+Shader ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile)
 {
-    Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
-    return Shaders[name];
+    return loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
 }
 
-Shader ResourceManager::GetShader(std::string name)
-{
-    return Shaders[name];
-}
-
-Texture ResourceManager::LoadTexture2D(const char *file,bool isAlpha, std::string name, int Filter, int Wrap)
+Texture ResourceManager::LoadTexture2D(const char *file,bool isAlpha, int Filter, int Wrap)
 {
 	Texture texture(GL_TEXTURE_2D);
 	if(isAlpha)
@@ -23,46 +13,24 @@ Texture ResourceManager::LoadTexture2D(const char *file,bool isAlpha, std::strin
 	else
 		texture.initPara(GL_RGB, Filter, Wrap);
 	texture.Generate(file);
-	Textures[name] = texture;
-    return Textures[name];
+    return texture;
 }
 
-Texture ResourceManager::LoadTextureCube(const char *file, std::string name, int Filter, int Wrap)
+Texture ResourceManager::LoadTextureCube(const char *file, int Filter, int Wrap)
 {
 	Texture texture(GL_TEXTURE_CUBE_MAP);
 	texture.initPara(GL_RGB, Filter, Wrap);
 	texture.Generate(file);
-	Textures[name] = texture;
-	return Textures[name];
+	return texture;
 }
 
-Texture ResourceManager::GetTexture(std::string name)
-{
-    return Textures[name];
-}
-
-GameMap ResourceManager::LoadGameMap(const char * file, std::string name)
+GameMap ResourceManager::LoadGameMap(const char * file)
 {
 	GameMap gmap;
 	gmap.initFromTxt(file);
-	GameMaps[name] = gmap;
-	return GameMaps[name];
+	return gmap;
 }
 
-GameMap ResourceManager::GetGameMap(std::string name)
-{
-	return GameMaps[name];
-}
-
-void ResourceManager::Clear()
-{
-    // (properly) delete all shaders	
-    for (auto iter : Shaders)
-        glDeleteProgram(iter.second.ID);
-    // (properly) delete all textures
-    for (auto iter : Textures)
-        glDeleteTextures(1, &iter.second.ID);
-}
 
 Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile)
 {

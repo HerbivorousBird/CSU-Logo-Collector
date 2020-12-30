@@ -6,7 +6,6 @@
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="includes\glad\glad.c" />
-    <ClCompile Include="Hawkeye.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -15,12 +14,12 @@
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="GameMap.h" />
-    <ClInclude Include="Hawkeye.h" />
     <ClInclude Include="CSUlogo.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="GameSceneControl.h" />
-    <ClInclude Include="StaticEnv.h" />
-    <ClInclude Include="FullScreenPic.h" />
+    <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="Hawkeye.h" />
+    <ClInclude Include="Square.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shader\skybox.vs" />
@@ -31,12 +30,14 @@
     <None Include="resources\shader\cube.fs" />
     <None Include="resources\shader\logo.fs" />
     <None Include="resources\shader\logo.vs" />
+    <None Include="resources\shader\hawkeye.vs" />
+    <None Include="resources\shader\hawkeye.fs" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MyOpenGLGame.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="resources\maps\map1.txt" />
-    <Text Include="resources\maps\mazeMap.txt" />
+    <Text Include="resources\maps\CollectMap.txt" />
+    <Text Include="resources\maps\MazeMap.txt" />
   </ItemGroup>
 </Project>

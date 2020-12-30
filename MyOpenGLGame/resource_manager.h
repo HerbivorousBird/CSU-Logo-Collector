@@ -16,18 +16,11 @@
 class ResourceManager
 {
 public:
-	static std::map<std::string, Shader>  Shaders;
-	static std::map<std::string, Texture> Textures;
-	static std::map<std::string, GameMap> GameMaps;
-	static Shader LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, std::string name);
-	static Shader GetShader(std::string name);
-	static Texture LoadTexture2D(const char * file, bool isAlpha, std::string name, int Filter = GL_LINEAR, int Wrap = GL_REPEAT);
-	static Texture LoadTextureCube(const char * file, std::string name, int Filter = GL_LINEAR, int Wrap = GL_CLAMP_TO_EDGE);
-	static Texture GetTexture(std::string name);
-	static GameMap LoadGameMap(const char * file, std::string name);
-	static GameMap GetGameMap(std::string name);
+	static Shader LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile);
+	static Texture LoadTexture2D(const char * file, bool isAlpha,int Filter = GL_LINEAR, int Wrap = GL_REPEAT);
+	static Texture LoadTextureCube(const char * file,int Filter = GL_LINEAR, int Wrap = GL_CLAMP_TO_EDGE);
+	static GameMap LoadGameMap(const char * file);
 
-	static void      Clear();
 private:
 	ResourceManager() { }
 	static Shader loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile = nullptr);

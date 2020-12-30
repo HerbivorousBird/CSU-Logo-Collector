@@ -82,13 +82,15 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>STB_IMAGE.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>./lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="resources\shader\fullPic.fs" />
     <None Include="resources\shader\fullPic.vs" />
+    <None Include="resources\shader\hawkeye.fs" />
+    <None Include="resources\shader\hawkeye.vs" />
     <None Include="resources\shader\logo.fs" />
     <None Include="resources\shader\logo.vs" />
     <None Include="resources\shader\skybox.fs" />
@@ -98,7 +100,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="includes\glad\glad.c" />
-    <ClCompile Include="Hawkeye.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="resource_manager.cpp" />
@@ -108,22 +109,22 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="CSUlogo.h" />
     <ClInclude Include="Cube.h" />
-    <ClInclude Include="FullScreenPic.h" />
+    <ClInclude Include="Square.h" />
     <ClInclude Include="GameSceneControl.h" />
     <ClInclude Include="Hawkeye.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PhysicsEngine.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
-    <ClInclude Include="StaticEnv.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MyOpenGLGame.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="resources\maps\map1.txt" />
-    <Text Include="resources\maps\mazeMap.txt" />
+    <Text Include="resources\maps\CollectMap.txt" />
+    <Text Include="resources\maps\MazeMap.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

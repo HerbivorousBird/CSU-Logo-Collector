@@ -6,11 +6,9 @@
 #include "GameMap.h"
 using namespace std;
 
+#define roleHeight 1.6f          //玩家视点到脚的高度
 
-
-#define roleHeight 1.6f           //玩家视点到脚的高度
-
-#define GravityAcceler -10
+#define GravityAcceler -10       //重力加速度
 
 #define JumpInitialSpeed 5.0f    //起跳初速度
 
@@ -32,15 +30,21 @@ public:
 	//每帧绘制的时候更新摄像机
 	void updateCamera(glm::vec3 lastPos, glm::vec3 & newPos,float dt);
 
+	bool isCollectable();
+	glm::ivec3 newLoc, lastLoc;
+
 private:
 
 	glm::ivec3 getLocation(glm::vec3 pos);
+
+	int code;
 	int encode(glm::vec3 pos);
 	void collisionTest(glm::vec3 lastPos, glm::vec3 & newPos);
 	void testXZCollision(glm::vec3 & pos, glm::ivec3 loc);
 	void updataNeighbour(glm::ivec3 loc);
 	float vy;        //垂直方向速度
 	bool isJumping;  //是否在跳跃
+	GameMap* gmap;
 	int* map;        //地图数组
 	int mapx, mapz;  //地图尺寸
 	bool accessibleNei[10];  //邻域是否可进入

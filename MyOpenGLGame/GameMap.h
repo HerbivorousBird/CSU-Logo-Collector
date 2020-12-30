@@ -15,8 +15,8 @@ public:
 	int type;
 	int sum;
 	int* mapArr;
-	glm::ivec3 roalPos;
-	glm::ivec3 targetPos;
+	glm::ivec3 roalLoc;
+	glm::ivec3 targetLoc;
 
 	GameMap() {};
 
@@ -32,8 +32,8 @@ public:
 		}
 		file.getline(temp, 1000, '\n'); //跳过文件第一行注释
 		file >> mapz >> mapx >> type;
-		file >> roalPos.x >> roalPos.z;
-		file >> targetPos.x >> targetPos.z;
+		file >> roalLoc.x >> roalLoc.z;
+		file >> targetLoc.x >> targetLoc.z;
 		mapArr = new int[mapx * mapz];
 		for (int z = 0; z < mapz; z++) {
 			for (int x = 0; x < mapx; x++) {
@@ -41,8 +41,8 @@ public:
 				sum += mapArr[z*mapx + x];
 			}
 		}
-		roalPos.y = mapArr[roalPos.z * mapx + roalPos.x] + 2;
-		targetPos.y = mapArr[targetPos.z * mapx + targetPos.x];
+		roalLoc.y = mapArr[roalLoc.z * mapx + roalLoc.x] + 2;
+		targetLoc.y = mapArr[targetLoc.z * mapx + targetLoc.x]+1;
 		file.close();
 	}
 
@@ -50,10 +50,11 @@ public:
 		return mapArr[z * mapx + x];
 	}
 
-	glm::ivec3 randTarget() {
+	void randTarget() {
 		srand(unsigned(time(NULL)));
-		int n = rand() % sum;
-		return glm::ivec3(n%mapx, mapArr[n], n / mapx);
+		int n = rand() % (mapx*mapz);
+		targetLoc=glm::ivec3(n % mapx, mapArr[n]+1, n / mapx);
+		std::cout << n % mapx <<" "<< mapArr[n] + 2 << " " << n / mapx << endl;
 	}
 
 	int * getMapPosArr()

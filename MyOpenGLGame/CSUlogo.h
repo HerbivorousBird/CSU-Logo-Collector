@@ -21,14 +21,42 @@ public:
 		angle = angle++ % 360;
 	}
 
-	void drawLogo(glm::vec3 position, Shader shader)
+	void drawLogo(glm::vec3 position, Shader shader,glm::vec3 viewPos)
 	{
+		shader.setVec3f("viewPos", viewPos);
+		shader.setFloat("aalpha", 0.8);
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, position);
 		model = glm::rotate(model, glm::radians(float(angle)), glm::vec3(0.0, 1, 0.0));
+		model = glm::scale(model, glm::vec3(0.7));
 		shader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
+
+	void drawParticleLogo(glm::vec3 position, Shader shader,float alpha,int angle) {
+		shader.setVec3f("viewPos", glm::vec3(1, 1, 1));
+		shader.setFloat("aalpha", alpha);
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, position);
+		model = glm::rotate(model, glm::radians(float(angle)), glm::vec3(0.0, 1, 0.0));
+		model = glm::scale(model, glm::vec3(0.02));
+		shader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
+	void drawScoreLogo(Shader shader, int i, float aspect) {
+		shader.use();
+		shader.setVec3f("viewPos", glm::vec3(1, 1, 1));
+		shader.setFloat("aalpha", 1);
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-0.9, 0.9, 0));
+		model = glm::scale(model, glm::vec3(0.1, 0.1*aspect, 1));
+		model = glm::translate(model, glm::vec3(i,0,0));
+		shader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
+
 
 private:
 	int angle = 0;
