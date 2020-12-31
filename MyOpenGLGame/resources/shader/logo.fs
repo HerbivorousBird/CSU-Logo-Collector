@@ -28,11 +28,9 @@ void main()
     if(texColor.a < 0.1)
         discard;
 
-	vec3 texDiffuse = texColor.rgb;
-    vec3 texSpecular = texColor.rgb;
 
     // ambient
-    vec3 ambient = lightAmbient*texDiffuse;
+    vec3 ambient = lightAmbient*matAmbient;
 
    // diffuse
     vec3 lightDir = normalize(vec3(0,-1,1));

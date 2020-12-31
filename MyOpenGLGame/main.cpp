@@ -1,3 +1,4 @@
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
@@ -13,7 +14,7 @@
 #include "PhysicsEngine.h"
 #include "GameMap.h"
 #include <iostream>
-#include "GameSceneControl.h"
+#include "GameSceneRender.h"
 #include "ParticleSystem.h"
 
 void esc_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -37,7 +38,7 @@ GLFWwindow* window;
 Camera* camera;
 PhysicsEngine* pEngine;
 GameMap* gmap;
-GameSceneControl* gameSceneP;
+GameSceneRender* gameSceneP;
 Scene* currentScene;
 
 // timing
@@ -48,7 +49,7 @@ float lastFrame = 0.0f;
 int main()
 {
 	initWindow();
-	GameSceneControl gameScene;
+	GameSceneRender gameScene;
 	gameSceneP = &gameScene;
 	gameScene.initResourse();
 	gameScene.bindTex2Sha();
@@ -56,7 +57,7 @@ int main()
 	pEngine = &gameScene.pEngine;
 	camera = &gameScene.camera;
 	gmap = &gameScene.gmap;
-	gameScene.initMap();
+	gameScene.initDefaultMap();
 	// render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -73,7 +74,13 @@ int main()
 		case HELP_C:
 		case HELP_M:
 		case WIN:
+			gameScene.updataPara(aspect, deltaTime);
+			gameScene.DrawMap();
+			gameScene.DrawParticle();
+			gameScene.DrawSkybox();
 			gameScene.DrawFullScreen();
+			break;
+
 		case COLLECT:
 			gameScene.updataPara(aspect, deltaTime);
 			gameScene.DrawMap();
@@ -100,7 +107,6 @@ int main()
 			if (pEngine->isCollectable()) {
 				gameScene.particle.init(60, gmap->targetLoc);
 				*currentScene = WIN;
-				gameScene.DrawFullScreen();
 				gmap->randTarget();
 			}
 		}
@@ -119,17 +125,16 @@ void processInput(GLFWwindow *window)
 			*currentScene = HELP_C;
 		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
 			*currentScene = HELP_M;
+		gameSceneP->initMap();
 		break;
 	case HELP_C:
 		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
 			*currentScene = COLLECT;
-			gameSceneP->initMap();
 		}
 		break;
 	case HELP_M:
 		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
 			*currentScene = MAZE;
-			gameSceneP->initMap();
 		}
 		break;
 	case WIN:
@@ -211,13 +216,18 @@ int initWindow() {
 	// glfw window creation
 	// -------------------
 
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "MyGame", NULL, NULL);
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CSU Logo Collector", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
+	// 获取第一个显示器分辨率，从而设置窗口居中
+	int monitorCount;
+	GLFWmonitor** pMonitor = glfwGetMonitors(&monitorCount);
+	const GLFWvidmode* mode = glfwGetVideoMode(*pMonitor);
+	glfwSetWindowPos(window, (mode->width - SCR_WIDTH) / 2, (mode->height - SCR_HEIGHT) / 2);
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -242,6 +252,11 @@ int initWindow() {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_ALPHA_TEST);
-	//glAlphaFunc(GL_GREATER, 0);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0);
+}
+
+// Release版本改为win32程序后入口。
+int WinMain(HINSTANCE hinstance, HINSTANCE hprevinstance, LPSTR lpcmdline, int ncmdshow) {
+	main();
 }

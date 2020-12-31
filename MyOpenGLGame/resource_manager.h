@@ -2,13 +2,11 @@
 #define RESOURCE_MANAGER_H
 
 
-#include <map>
 #include <string>
 #include <glad/glad.h>
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include <vector>
 #include "GameMap.h"
 #include "Texture.h"
 #include "shader.h"

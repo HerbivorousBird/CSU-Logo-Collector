@@ -16,10 +16,9 @@
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="CSUlogo.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="GameSceneControl.h" />
     <ClInclude Include="ParticleSystem.h" />
-    <ClInclude Include="Hawkeye.h" />
     <ClInclude Include="Square.h" />
+    <ClInclude Include="GameSceneRender.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shader\skybox.vs" />

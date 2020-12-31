@@ -1,5 +1,5 @@
-#ifndef GAMESCENECONTROL_H
-#define GAMESCENECONTROL_H
+#ifndef GAMESCENERENDER_H
+#define GAMESCENERENDER_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -28,31 +28,31 @@ enum Scene {
 	WIN
 };
 
-class GameSceneControl
+class GameSceneRender
 {
 public:
 	Scene currentScene;
 
-	Cube GameSceneControl::cube;
-	CSUlogo GameSceneControl::logo;
+	Cube cube;
+	CSUlogo logo;
 	Square square;
-	GameMap GameSceneControl::gmap;
-	Shader GameSceneControl::cubeShader;
-	Shader GameSceneControl::logoShader;
-	Shader GameSceneControl::skyboxShader;
-	Shader GameSceneControl::fullPicShader;
-	Shader GameSceneControl::hawkeyeShader;
+	GameMap gmap;
+	Shader cubeShader;
+	Shader logoShader;
+	Shader skyboxShader;
+	Shader fullPicShader;
+	Shader hawkeyeShader;
 
-	Texture GameSceneControl::cubeTex1;
-	Texture GameSceneControl::cubeTex2;
-	Texture GameSceneControl::logoTex;
-	Texture GameSceneControl::skyboxTex;
-	Texture GameSceneControl::mainMenuPic;
-	Texture GameSceneControl::helpPic_m;
-	Texture GameSceneControl::helpPic_c;
-	Texture GameSceneControl::winPic;
-	PhysicsEngine GameSceneControl::pEngine;
-	Camera GameSceneControl::camera;
+	Texture cubeTex1;
+	Texture cubeTex2;
+	Texture logoTex;
+	Texture skyboxTex;
+	Texture mainMenuPic;
+	Texture helpPic_m;
+	Texture helpPic_c;
+	Texture winPic;
+	PhysicsEngine pEngine;
+	Camera camera;
 	ParticleSystem particle;
 
 	int collectScore;
@@ -83,16 +83,22 @@ public:
 		currentScene = MAINMENU;
 	}
 
+	void initDefaultMap() {
+		gmap = ResourceManager::LoadGameMap("resources/maps/CollectMap.txt");
+		pEngine.initBoundary(gmap);
+		camera.Position = gmap.roalLoc;
+		lastPos = camera.Position;
+	}
+
 	void initMap() {
-		if (currentScene == COLLECT) {
+		if (currentScene == HELP_C) {
 			gmap = ResourceManager::LoadGameMap("resources/maps/CollectMap.txt");
 		}
-		else if (currentScene == MAZE) {
+		else if (currentScene == HELP_M) {
 			gmap = ResourceManager::LoadGameMap("resources/maps/MazeMap.txt");
 		}
-		else {
-			gmap = ResourceManager::LoadGameMap("resources/maps/CollectMap.txt");
-		}
+		else
+			return;
 		pEngine.initBoundary(gmap);
 		camera.Position = gmap.roalLoc;
 		lastPos = camera.Position;
@@ -102,7 +108,6 @@ public:
 	void bindTex2Sha() {
 		cubeShader.use();
 		cubeShader.setInt("texture1", 0);
-		cubeShader.setInt("texture2", 1);
 		skyboxShader.use();
 		skyboxShader.setInt("skybox", 0);
 		logoShader.use();
@@ -240,7 +245,7 @@ public:
 		for (int i = 0; i < particle.particles.size(); i++)
 		{
 			Particle& p = particle.particles[i];
-			float alpha = 1 - p.age / p.life;
+			float alpha = 1 - particle.age / p.life;
 			logo.drawParticleLogo(p.position,logoShader, alpha, p.angle);
 		}
 	}
@@ -259,6 +264,4 @@ public:
 		glDepthFunc(GL_LESS);
 	}
 };
-
-
 #endif
