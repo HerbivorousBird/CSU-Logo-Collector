@@ -1,1 +1,1 @@
-# CSU-Logo-Collector
+文档待完善
